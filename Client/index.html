@@ -1,0 +1,100 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>SISTER</title>
+	<meta name="description" content="The HTML5 Herald">
+	<meta name="author" content="SitePoint">
+
+	<!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/animate.css">
+
+</head>
+
+<body>
+	
+	<div id="app" style="width:100%;display:flex;justify-content:center;align-items:center;flex-wrap:wrap">
+		<div style="width:90%;margin-top:20px;display:flex;flex-wrap:wrap;justify-content:center;background-color:#585c63">
+			<div style="margin:20px;">
+				<label style="color:white">NIM</label>
+				<input v-model="nim" type="email" class="form-control" id="exampleFormControlInput1" placeholder="Ex: M0516090">
+			</div>
+			<div style="margin:20px;">
+				<label style="color:white">Nama</label>
+				<input v-model="name" type="email" class="form-control" id="exampleFormControlInput1" placeholder="Ex: Paijo">
+			</div>
+			<div style="margin:20px;">
+				<label style="color:white">Angkatan</label>
+				<input v-model="angkatan" type="email" class="form-control" id="exampleFormControlInput1" placeholder="Ex: 2016">
+			</div>
+		</div>
+		<div style="width:100%;"></div>
+		<div style="width:90%;height:60vh;overflow:auto;display:flex;justify-content:center;flex-wrap:wrap;background-color:#d4d8dd">
+			<div v-if="itemsFilter.length == 0">Data Not Found</div>
+			<div class="kartu" v-for="item in itemsFilter">
+				<div class="card" style="width: 18rem;margin:10px;">
+				  <div class="card-body">
+				    <h5 class="card-title">{{item.name}} ({{item.nim}})</h5>
+				    <h6 class="card-subtitle mb-2 text-muted">{{item.angkatan}}</h6>
+				    <p class="card-text">{{item.quote}}</p>
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+
+	<script src="./js/jquery.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+	<script src="./js/axios.js"></script>
+	<script src="./js/vue.js"></script>
+
+	<script>
+		
+		const vm = new Vue({
+			el: '#app',
+			data () {
+			    return {
+			    	name:'',
+			    	nim:'',
+			    	angkatan:'',
+			    	items:[],
+			    	itemsFilter:[]
+				}
+			},
+			created() {
+			    axios.get('http://localhost/SISTERJSON/Server/index.php')
+				.then((res=>{
+					this.items = res.data
+					this.itemsFilter = res.data
+				}))
+		  	},
+			methods:{
+			    reverseMessage: function () {
+			      this.message = this.message.split('').reverse().join('')
+			    }
+			},
+			watch:{
+				name:function(newVal){
+					this.itemsFilter = this.items.filter(item =>{
+						return item.name.includes(newVal)&&item.nim.includes(this.nim)&&item.angkatan.includes(this.angkatan)
+					})
+				},
+				nim:function(newVal){
+					this.itemsFilter = this.items.filter(item =>{
+						return item.name.includes(this.name)&&item.nim.includes(newVal)&&item.angkatan.includes(this.angkatan)
+					})
+				},
+				angkatan:function(newVal){
+					this.itemsFilter = this.items.filter(item =>{
+						return item.name.includes(this.name)&&item.nim.includes(this.nim)&&item.angkatan.includes(newVal)
+					})
+				}
+			}
+		})
+	</script>
+</body>
+</html>
